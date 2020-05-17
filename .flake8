@@ -1,0 +1,13 @@
+[flake8]
+ignore = D203, B305, W293
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    env,
+    tests,
+max-complexity = 10
+max-line-length = 120
+import-order-style = pep8
+application-import-names = chatstats
+format = '%(path)s:%(row)d Column:%(col)d: %(code)s %(text)s'
