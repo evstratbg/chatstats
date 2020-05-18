@@ -11,7 +11,7 @@ class SyncChatStats:
     __slots__ = ('url', 'version', 'session', 'token')
 
     ALLOWED_REQUEST_TYPES = ('POST', 'GET')
-    URL = 'https://chat-stats.ru'
+    URL = 'https://api.chat-stats.ru'
     ACTUAL_VERSION = 'v1'
     VERSIONS = ('v1',)
 
@@ -28,9 +28,9 @@ class SyncChatStats:
     def __make_request(self,
                        request_type: str,
                        url: str,
-                       payload: dict,
-                       params: dict
-                       ) -> bool:
+                       payload: dict = None,
+                       params: dict = None
+                       ) -> Response:
         if request_type.upper() not in self.ALLOWED_REQUEST_TYPES:
             raise KeyError(
                 'unsupported request type. Types: %s' % list(self.ALLOWED_REQUEST_TYPES)
@@ -40,6 +40,7 @@ class SyncChatStats:
             'url': url,
             'json': payload,
             'params': params,
+            'method': request_type.upper()
         }
         rid = str(uuid.uuid4())
         request_params.update({
@@ -55,7 +56,7 @@ class SyncChatStats:
         try:
             response = self.session.send(
                 prepared_request,
-                timeout=5,
+                timeout=5
             )
             logger.debug(
                 'Sent request to %s. Response code: %s' %
@@ -91,6 +92,9 @@ class SyncChatStats:
         return self.__make_request(
             request_type='POST',
             url='/'.join([self.url, self.version, 'event']),
+            params={
+                'token': self.token
+            },
             payload={
                 'name': event_name,
                 'user': {
